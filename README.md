@@ -21,6 +21,15 @@ $ expo login
 
 ## 참고
 
-- https://reactnative.dev/
+- 문서: https://reactnative.dev/
 - 과거에는 react native에서 제공하는 컴포넌트가 많았지만 모든 컴포넌트를 지원하는게 어렵다고 판단하고 react native components와 api 규모를 줄임
 - 그래서 서드파티 라이브러리들이 중요해짐
+- 서드파티 패키지, api: https://reactnative.directory/
+- expo 팀에서도 자체적으로 package와 api를 만들게됨. -> expo SDK: https://docs.expo.dev/versions/latest/
+
+
+## 문서 용어
+- components: 화면에 랜더링할 항목
+- api: js 코드, 운영체제와 소통하기 위한 함수들
+
+  
