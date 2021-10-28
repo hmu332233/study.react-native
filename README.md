@@ -18,3 +18,9 @@ react native <-> bridge <-> platform api
 ```js
 $ expo login
 ```
+
+## 참고
+
+- https://reactnative.dev/
+- 과거에는 react native에서 제공하는 컴포넌트가 많았지만 모든 컴포넌트를 지원하는게 어렵다고 판단하고 react native components와 api 규모를 줄임
+- 그래서 서드파티 라이브러리들이 중요해짐
