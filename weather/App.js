@@ -21,10 +21,10 @@ const Example2 = () => {
   return (
     // react-native의 layout 시스템은 기본적으로 flex와 같음
     // flex direction의 기본값은 column
-    <View style={{ flexDirection: 'row' }}>
-      <View style={{ width: 200, height: 200, backgroundColor: 'red'}}></View>
-      <View style={{ width: 200, height: 200, backgroundColor: 'blue'}}></View>
-      <View style={{ width: 200, height: 200, backgroundColor: 'yellow'}}></View>
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: 'red'}}></View>
+      <View style={{ flex: 1, backgroundColor: 'blue'}}></View>
+      <View style={{ flex: 1, backgroundColor: 'yellow'}}></View>
     </View>
   );
 };
