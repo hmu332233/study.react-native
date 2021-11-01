@@ -19,6 +19,14 @@ react native <-> bridge <-> platform api
 $ expo login
 ```
 
+```
+m: 메뉴얼
+r: refresh
+d: 개발 콘솔창 열림
+```
+
+폰으로 실행 중이라면 폰을 흔들면 메뉴가 보임
+
 ## 참고
 
 - 문서: https://reactnative.dev/
@@ -31,5 +39,4 @@ $ expo login
 ## 문서 용어
 - components: 화면에 랜더링할 항목
 - api: js 코드, 운영체제와 소통하기 위한 함수들
-
   
