@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 
-export default function App() {
+const Example1 = () => {
   return (
     // View - container 역할
     <View style={styles.container}> 
@@ -11,7 +12,27 @@ export default function App() {
       <Text>Hello!</Text>
       {/* 실제로 화면에 표시되는게 아닌 시스템 상태바와 소통할 수 있는 수단 */}
       <StatusBar style="auto" /> 
+      
     </View>
+  );
+}
+
+const Example2 = () => {
+  return (
+    // react-native의 layout 시스템은 기본적으로 flex와 같음
+    // flex direction의 기본값은 column
+    <View style={{ flexDirection: 'row' }}>
+      <View style={{ width: 200, height: 200, backgroundColor: 'red'}}></View>
+      <View style={{ width: 200, height: 200, backgroundColor: 'blue'}}></View>
+      <View style={{ width: 200, height: 200, backgroundColor: 'yellow'}}></View>
+    </View>
+  );
+};
+
+export default function App() {
+  return (
+    // <Example1 />
+    <Example2 />
   );
 }
 
