@@ -1,33 +1,38 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 
 import * as Location from 'expo-location';
 
 const { width: SECREEN_WIDTH } = Dimensions.get('window');
 
+const API_KEY = "38ed66b6071035f80306816eabedb231";
 
+const fetchWeather = (latitude, longitude) => fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&units=metric&appid=${API_KEY}`).then(res => res.json());
 
 export default function App() {
   const [city, setCity] = useState('Loadding..');
-  const [location, setLocation] = useState(null);
+  const [days, setDays] = useState([]);
   const [ok, setOk] = useState(true);
 
-  const requestPermission = async () => {
+  const getWeather = async () => {
     let { granted } = await Location.requestForegroundPermissionsAsync();
     if (!granted) {
       setOk(false);
     }
 
-    const { coords: { latitude, longitude }} = await Location.getCurrentPositionAsync({ accuracy: 5 });
+    const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync({ accuracy: 5 });
     // latitude, longitude를 이용해서 reverse geocoding - 위도 경도를 이용하여 주소 알기
     const location = await Location.reverseGeocodeAsync({ latitude, longitude }, { useGoogleMaps: false });
     setCity(location[0].city);
-    setLocation(location);
+
+    const { daily } = await fetchWeather(latitude, longitude);
+    console.log(daily)
+    setDays(daily.map(d => ({ temp: d.temp.day, description: d.weather[0].main })));
   }
 
   useEffect(() => {
-    requestPermission();
+    getWeather();
   }, [])
 
   return (
@@ -42,22 +47,18 @@ export default function App() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
       >
-        <View style={styles.day}>
-          <Text style={styles.temp}>27</Text>
-          <Text style={styles.description}>Sunny</Text>
-        </View>
-        <View style={styles.day}>
-          <Text style={styles.temp}>27</Text>
-          <Text style={styles.description}>Sunny</Text>
-        </View>
-        <View style={styles.day}>
-          <Text style={styles.temp}>27</Text>
-          <Text style={styles.description}>Sunny</Text>
-        </View>
-        <View style={styles.day}>
-          <Text style={styles.temp}>27</Text>
-          <Text style={styles.description}>Sunny</Text>
-        </View>
+        {days.length === 0 ? (
+          <View style={styles.day}>
+            <ActivityIndicator color="white" size="large" />
+          </View>
+        ) : (
+          days.map(day => (
+            <View style={styles.day}>
+              <Text style={styles.temp}>{Math.floor(day.temp)}</Text>
+              <Text style={styles.description}>{day.description}</Text>
+            </View>
+          ))
+        )}
       </ScrollView>
     </View>
   );
