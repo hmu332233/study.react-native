@@ -1,16 +1,40 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
+
+import * as Location from 'expo-location';
 
 const { width: SECREEN_WIDTH } = Dimensions.get('window');
 
 
+
 export default function App() {
+  const [city, setCity] = useState('Loadding..');
+  const [location, setLocation] = useState(null);
+  const [ok, setOk] = useState(true);
+
+  const requestPermission = async () => {
+    let { granted } = await Location.requestForegroundPermissionsAsync();
+    if (!granted) {
+      setOk(false);
+    }
+
+    const { coords: { latitude, longitude }} = await Location.getCurrentPositionAsync({ accuracy: 5 });
+    // latitude, longitude를 이용해서 reverse geocoding - 위도 경도를 이용하여 주소 알기
+    const location = await Location.reverseGeocodeAsync({ latitude, longitude }, { useGoogleMaps: false });
+    setCity(location[0].city);
+    setLocation(location);
+  }
+
+  useEffect(() => {
+    requestPermission();
+  }, [])
+
   return (
     <View style={styles.container}>
       <StatusBar style="black" />
       <View style={styles.city}>
-        <Text style={styles.cityName}>Seoul</Text>
+        <Text style={styles.cityName}>{city}</Text>
       </View>
       <ScrollView
         contentContainerStyle={styles.weather}
