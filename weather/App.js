@@ -1,14 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
+import { Fontisto } from '@expo/vector-icons'; 
 
 import * as Location from 'expo-location';
 
 const { width: SECREEN_WIDTH } = Dimensions.get('window');
 
-const API_KEY = "38ed66b6071035f80306816eabedb231";
+const API_KEY = "";
 
 const fetchWeather = (latitude, longitude) => fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&units=metric&appid=${API_KEY}`).then(res => res.json());
+
+const icons = {
+  Clouds: 'cloudy',
+  Clear: 'day-sunny',
+  Rain: 'rain',
+};
 
 export default function App() {
   const [city, setCity] = useState('Loadding..');
@@ -28,7 +35,7 @@ export default function App() {
 
     const { daily } = await fetchWeather(latitude, longitude);
     console.log(daily)
-    setDays(daily.map(d => ({ temp: d.temp.day, description: d.weather[0].main })));
+    setDays(daily.map(d => ({ temp: d.temp.day, main: d.weather[0].main, description: d.weather[0].description })));
   }
 
   useEffect(() => {
@@ -54,7 +61,9 @@ export default function App() {
         ) : (
           days.map(day => (
             <View style={styles.day}>
+              <Fontisto name={icons[day.main]} size={80} color="black" />
               <Text style={styles.temp}>{Math.floor(day.temp)}</Text>
+              <Text style={styles.description}>{day.main}</Text>
               <Text style={styles.description}>{day.description}</Text>
             </View>
           ))
@@ -87,12 +96,13 @@ const styles = StyleSheet.create({
     width: SECREEN_WIDTH,
     alignItems: 'center',
   },
+  box: {
+    alignItems: 'center'
+  },
   temp: {
-    marginTop: 50,
-    fontSize: 178,
+    fontSize: 60,
   },
   description: {
-    marginTop: -30,
     fontSize: 60
   },
 });
