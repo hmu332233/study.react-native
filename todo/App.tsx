@@ -1,21 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { theme } from './colors';
 
 export default function App() {
+  const [working, setWorking] = useState(true);
+  const [text, setText] = useState('');
+  const onChangeText = (text: string) => useState(text);
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
         {/* 눌렀을때 opacity 효과를 줌 */}
-        <TouchableOpacity> 
-          <Text style={styles.btnText}>Work</Text>
+        <TouchableOpacity onPress={() => setWorking(true)}> 
+          <Text style={{ ...styles.btnText, color: working ? 'white' : theme.grey }}>Work</Text>
         </TouchableOpacity>
-        <TouchableOpacity> 
-          <Text style={styles.btnText}>Travel</Text>
+        <TouchableOpacity onPress={() => setWorking(false)}> 
+          <Text style={{ ...styles.btnText, color: working ? 'white' : theme.grey }}>Travel</Text>
         </TouchableOpacity>
       </View>
+      <TextInput style={styles.input} placeholder={working ? 'Add a To Do' : 'Where do you want to go?'} onChangeText={onChangeText} />
     </View>
   );
 }
@@ -35,5 +39,13 @@ const styles = StyleSheet.create({
     fontSize: 38,
     fontWeight: '600',
     color: 'white'
+  },
+  input: {
+    marginTop: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    backgroundColor: 'white',
+    fontSize: 18,
   }
 });
