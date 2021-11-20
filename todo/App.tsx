@@ -1,23 +1,61 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { theme } from './colors';
 
-type Todo = { text: string, work: boolean };
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+type Todo = { text: string, working: boolean };
+type TodoState = { [key: string]: Todo };
+
+const STORAGE_KEY = '@TODOS'
+const saveToDos = async (toDoState: TodoState) => {
+  try {
+    const jsonValue = JSON.stringify(toDoState)
+    await AsyncStorage.setItem(STORAGE_KEY, jsonValue)
+  } catch (e) {
+    // saving error
+  }
+}
+const loadToDos = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(STORAGE_KEY)
+    return jsonValue !== null ? JSON.parse(jsonValue) : null;
+  } catch(e) {
+    // error reading value
+  }
+}
 
 export default function App() {
+  const mounted = useRef<boolean>();
   const [working, setWorking] = useState(true);
   const [text, setText] = useState('');
-  const [toDos, setToDos] = useState({});
+  const [toDos, setToDos] = useState<TodoState>({});
   const onChangeText = (text: string) => setText(text);
   const addTodo = () => {
     if (text === '') {
       return;
     }
 
-    setToDos(originTodos => ({ ...originTodos, [Date.now()]: { text, work: working }}));
+    setToDos(originTodos => ({ ...originTodos, [Date.now()]: { text, working }}));
     setText('');
   }
+
+  useEffect(() => {
+    (async () => {
+      const toDos = await loadToDos();
+      setToDos(toDos);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    saveToDos(toDos);
+  }, [toDos])
+ 
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -32,7 +70,7 @@ export default function App() {
       </View>
       <TextInput style={styles.input} placeholder={working ? 'Add a To Do' : 'Where do you want to go?'} value={text} onChangeText={onChangeText} onSubmitEditing={addTodo} returnKeyType="done" />
       <ScrollView>
-        {Object.entries<Todo>(toDos).map(([key, todo]) => (
+        {Object.entries<Todo>(toDos).filter(([key, todo]) => todo.working === working).map(([key, todo]) => (
           <View key={key} style={styles.toDo}>
             <Text style={styles.toDoText}>{todo.text}</Text>
           </View>  
