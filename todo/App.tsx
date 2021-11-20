@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { theme } from './colors';
 
+import { Fontisto } from '@expo/vector-icons'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Todo = { text: string, working: boolean };
@@ -21,7 +22,7 @@ const loadToDos = async () => {
   try {
     const jsonValue = await AsyncStorage.getItem(STORAGE_KEY)
     return jsonValue !== null ? JSON.parse(jsonValue) : null;
-  } catch(e) {
+  } catch (e) {
     // error reading value
   }
 }
@@ -37,8 +38,31 @@ export default function App() {
       return;
     }
 
-    setToDos(originTodos => ({ ...originTodos, [Date.now()]: { text, working }}));
+    setToDos(originTodos => ({ ...originTodos, [Date.now()]: { text, working } }));
     setText('');
+  }
+  const deleteTodo = (key: string) => {
+
+
+    Alert.alert(
+      "Delete To Do",
+      "Are you sure?",
+      [
+        {
+          text: "Cancel",
+          style: "destructive"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            const newToDos = { ...toDos };
+            delete newToDos[key];
+            setToDos(newToDos);
+          }
+        }
+      ],
+      { cancelable: false }
+    );
   }
 
   useEffect(() => {
@@ -55,16 +79,16 @@ export default function App() {
     }
     saveToDos(toDos);
   }, [toDos])
- 
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
         {/* 눌렀을때 opacity 효과를 줌 */}
-        <TouchableOpacity onPress={() => setWorking(true)}> 
+        <TouchableOpacity onPress={() => setWorking(true)}>
           <Text style={{ ...styles.btnText, color: working ? 'white' : theme.grey }}>Work</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setWorking(false)}> 
+        <TouchableOpacity onPress={() => setWorking(false)}>
           <Text style={{ ...styles.btnText, color: working ? theme.grey : 'white' }}>Travel</Text>
         </TouchableOpacity>
       </View>
@@ -73,7 +97,10 @@ export default function App() {
         {Object.entries<Todo>(toDos).filter(([key, todo]) => todo.working === working).map(([key, todo]) => (
           <View key={key} style={styles.toDo}>
             <Text style={styles.toDoText}>{todo.text}</Text>
-          </View>  
+            <TouchableOpacity onPress={() => deleteTodo(key)}>
+              <Fontisto name="trash" size={18} color="white" />
+            </TouchableOpacity>
+          </View>
         ))}
       </ScrollView>
     </View>
@@ -105,6 +132,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   toDo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: theme.grey,
     marginBottom: 10,
     paddingVertical: 20,
