@@ -6,7 +6,16 @@ import { theme } from './colors';
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState('');
-  const onChangeText = (text: string) => useState(text);
+  const [toDos, setToDos] = useState({});
+  const onChangeText = (text: string) => setText(text);
+  const addTodo = () => {
+    if (text === '') {
+      return;
+    }
+
+    setToDos(originTodos => ({ ...originTodos, [Date.now()]: { text, work: working }}));
+    setText('');
+  }
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -16,10 +25,10 @@ export default function App() {
           <Text style={{ ...styles.btnText, color: working ? 'white' : theme.grey }}>Work</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setWorking(false)}> 
-          <Text style={{ ...styles.btnText, color: working ? 'white' : theme.grey }}>Travel</Text>
+          <Text style={{ ...styles.btnText, color: working ? theme.grey : 'white' }}>Travel</Text>
         </TouchableOpacity>
       </View>
-      <TextInput style={styles.input} placeholder={working ? 'Add a To Do' : 'Where do you want to go?'} onChangeText={onChangeText} />
+      <TextInput style={styles.input} placeholder={working ? 'Add a To Do' : 'Where do you want to go?'} value={text} onChangeText={onChangeText} onSubmitEditing={addTodo} returnKeyType="done" />
     </View>
   );
 }
