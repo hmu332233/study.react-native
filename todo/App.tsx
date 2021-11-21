@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert, Platform } from 'react-native';
 import { theme } from './colors';
 
 import { Fontisto } from '@expo/vector-icons'; 
@@ -21,7 +21,7 @@ const saveToDos = async (toDoState: TodoState) => {
 const loadToDos = async () => {
   try {
     const jsonValue = await AsyncStorage.getItem(STORAGE_KEY)
-    return jsonValue !== null ? JSON.parse(jsonValue) : null;
+    return jsonValue !== null ? JSON.parse(jsonValue) : {};
   } catch (e) {
     // error reading value
   }
@@ -43,26 +43,35 @@ export default function App() {
   }
   const deleteTodo = (key: string) => {
 
+    const handleOk = () => {
+      const newToDos = { ...toDos };
+      delete newToDos[key];
+      setToDos(newToDos);
+    }
 
-    Alert.alert(
-      "Delete To Do",
-      "Are you sure?",
-      [
-        {
-          text: "Cancel",
-          style: "destructive"
-        },
-        {
-          text: "OK",
-          onPress: () => {
-            const newToDos = { ...toDos };
-            delete newToDos[key];
-            setToDos(newToDos);
+    if (Platform.OS  === 'web') {
+      const ok = confirm('Do you want to delete this To Do?');
+      if (ok) {
+        handleOk();
+      }
+    } else {
+      Alert.alert(
+        "Delete To Do",
+        "Are you sure?",
+        [
+          {
+            text: "Cancel",
+            style: "destructive"
+          },
+          {
+            text: "OK",
+            onPress: () => handleOk(),
           }
-        }
-      ],
-      { cancelable: false }
-    );
+        ],
+        { cancelable: false }
+      );
+    }
+    
   }
 
   useEffect(() => {
